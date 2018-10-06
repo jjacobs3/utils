@@ -1,8 +1,9 @@
 # Produces .txt files containing just text (without the markup). Can be run from
 # the command line or imported into another .py file
-import os
+import argparse
 import codecs
 import glob
+import os
 import re
 
 from bs4 import BeautifulSoup
@@ -33,7 +34,10 @@ def loadHTMLFolder(html_location):
         html_strs.append(soup_text)
 
 def streamHTMLFolder(html_path):
-    all_filepaths = glob.glob(os.path.join(html_path, "*.html"))
+    glob_str = os.path.join(html_path, "*.html")
+    all_filepaths = glob.glob(glob_str)
+    print("Glob string: " + str(glob_str))
+    print("Files found via glob: " + str(all_filepaths))
     for cur_filepath in all_filepaths:
         cur_html = loadHTML(cur_filepath)
         yield cur_filepath, cur_html
@@ -42,13 +46,35 @@ def saveText(text, output_filepath):
     with codecs.open(output_filepath, "w", "utf-8", errors="ignore") as g:
         g.write(text)
 
+def parseArgs():
+    # Process cmd vars, if any
+    parser = argparse.ArgumentParser()
+    parser.add_argument('html_path')
+    parser.add_argument('output_path')
+    args = parser.parse_args()
+    html_path = args.html_path
+    # Check if absolute or relative
+    if not os.path.isabs(html_path):
+        # Relative path, need to find it relative to the user's working dir
+        wd = os.getcwd()
+        html_path = os.path.join(wd, html_path)
+    output_path = args.output_path
+    if not os.path.isabs(output_path):
+        wd = os.getcwd()
+        output_path = os.path.join(wd, output_path)
+    return html_path, output_path
+
 def main():
-    for cur_filepath, cur_html in streamHTMLFolder("./html"):
+    # Parse command line args
+    html_path, output_path = parseArgs()
+    print("Importing html files from " + html_path)
+    print("Exporting txt files to " + output_path)
+    for cur_filepath, cur_html in streamHTMLFolder(html_path):
         print("Parsing " + cur_filepath)
         cur_txt = html2text(cur_html)
         # Generate the output filename
         output_filename = os.path.basename(cur_filepath).replace(".html",".txt")
-        output_filepath = os.path.join("txt", output_filename)
+        output_filepath = os.path.join(output_path, output_filename)
         # And save to .txt
         saveText(cur_txt, output_filepath)
 
