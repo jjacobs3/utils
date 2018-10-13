@@ -36,8 +36,8 @@ def loadHTMLFolder(html_location):
 def streamHTMLFolder(html_path):
     glob_str = os.path.join(html_path, "*.html")
     all_filepaths = glob.glob(glob_str)
-    print("Glob string: " + str(glob_str))
-    print("Files found via glob: " + str(all_filepaths))
+    #print("Glob string: " + str(glob_str))
+    #print("Files found via glob: " + str(all_filepaths))
     for cur_filepath in all_filepaths:
         cur_html = loadHTML(cur_filepath)
         yield cur_filepath, cur_html
@@ -67,10 +67,10 @@ def parseArgs():
 def main():
     # Parse command line args
     html_path, output_path = parseArgs()
-    print("Importing html files from " + html_path)
-    print("Exporting txt files to " + output_path)
+    #print("Importing html files from " + html_path)
+    #print("Exporting txt files to " + output_path)
     for cur_filepath, cur_html in streamHTMLFolder(html_path):
-        print("Parsing " + cur_filepath)
+        #print("Parsing " + cur_filepath)
         cur_txt = html2text(cur_html)
         # Generate the output filename
         output_filename = os.path.basename(cur_filepath).replace(".html",".txt")

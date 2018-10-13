@@ -1,3 +1,12 @@
+# Compress a pdf file (can change /ebook to /screen for more compression)
+gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile=mon3.pdf monopsony_in_motion.pdf
+
+# Unzip a .tar.xz file
+tar xf unpaper-6.1.tar.xz
+
+# Convert pdf to tiff
+gs -q -dNOPAUSE -sDEVICE=tiffg4 -sOutputFile=mon.tif monopsony_compressed.pdf -c quit
+
 # To quickly change the extension of a bunch of .txt files to .html
 
 for file in *.txt; do mv "$file" "${file%.txt}.html"; done
@@ -21,3 +30,17 @@ unzip <filename>.zip -d <directory>
 # To zip a specific directory
 
 zip <filename>.zip <directory or glob string>
+
+# Take a folder of .html files and (try to) parse it into a folder of .txt files
+
+for file in *.html; do w3m -dump "$file" > ${file%.html}.txt; done
+
+# Better way to parse html->txt
+## On Windows it's:
+type dumb.html | html-to-text --ignore-href=true --ignore-image=true > test.txt
+
+## On Linux:
+cat dumb.html | html-to-text --ignore-href=true --ignore-image=true > test.txt
+
+## In a loop:
+for file in *.html; do cat $file | html-to-text --ignore-href=true --ignore-image=true > ${file%.html}.txt; done
